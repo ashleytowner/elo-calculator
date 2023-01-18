@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Elo Calculator</title>
+	<script>
+		function expectedScore(eloa, elob) {
+			const qa = Math.pow(10, (eloa / 400))
+			const qb = Math.pow(10, (elob / 400))
+			return Math.round((qa / (qa + qb)) * 100) / 100;
+		}
+		function gain(eloa, elob, kfactor) {
+			const win = Math.round(expectedScore(elob, eloa) * kfactor);
+			const lose = Math.round(expectedScore(eloa, elob) * kfactor) * -1;
+			const tie = Math.round(kfactor / 2) + lose;
+			return [win, tie, lose];
+		}
+		function calculateElo() {
+			const eloa = document.getElementsByName('eloa')[0].value;
+			const elob = document.getElementsByName('elob')[0].value;
+			const kfactor = document.getElementsByName('kfactor')[0].value;
+			document.getElementById('oddsa').innerHTML = `${expectedScore(eloa, elob) * 100}%`;
+			document.getElementById('oddsb').innerHTML = `${expectedScore(elob, eloa) * 100}%`;
+			const [win, tie, lose] = gain(eloa, elob, kfactor);
+			document.getElementById('win').innerHTML = `${win > 0 ? '+' : win === 0 ? '±' : ''}${win}`;
+			document.getElementById('tie').innerHTML = `${tie > 0 ? '+' : tie === 0 ? '±' : ''}${tie}`;
+			document.getElementById('lose').innerHTML = lose;
+		}
+	</script>
+	<style>
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+			margin: 1rem;
+		}
+
+		table td,
+		table th {
+			border: 1px solid black;
+			padding: 0.2rem;
+		}
+
+		td.blank {
+			background-color: black;
+		}
+	</style>
+</head>
+
+<body>
+	<form>
+		<label for="eloa">Your Elo:</label>
+		<input type="number" name="eloa" />
+		<label for="elob">Their Elo:</label>
+		<input type="number" name="elob" />
+		<br />
+		<label for="kfactor">K-Factor:</label>
+		<input type="number" name="kfactor" value="16" />
+		<br />
+		<input type="button" value="Submit" onclick="calculateElo()" />
+	</form>
+	<table>
+		<thead>
+			<th></th>
+			<th>Win</th>
+			<th>Draw</th>
+			<th>Lose</th>
+		</thead>
+		<tr>
+			<th>Elo</th>
+			<td id="win"></td>
+			<td id="tie"></td>
+			<td id="lose"></td>
+		</tr>
+		<tr>
+			<th>Odds</th>
+			<td id="oddsa"></td>
+			<td class="blank"></td>
+			<td id="oddsb"></td>
+		</tr>
+	</table>
+</body>
+
+</html>
